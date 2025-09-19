@@ -35,6 +35,7 @@ local Ground = {
 }
 
 local fuction = require "fuction"
+local json = require "dkjson"
 
 function love.load()
     robotSpriteUp = love.graphics.newImage("Image/Robot/RobotL1_Up.png")
@@ -46,6 +47,16 @@ function love.load()
     if Game.state == "Load" then
         love.window.setTitle("DizaW")
     end
+        
+    local fileContent = love.filesystem.read("World.json")
+    if fileContent then
+        World = json.decode(fileContent)
+    else
+        World = {}
+        print("World.json не найден!")
+    end
+
+    tileSize = 32
 end
 
 function love.update(dt)
@@ -135,13 +146,23 @@ function love.draw()
     if Game.state == "Play" then
         fuction.ChangeFont(10, "Font/Digital Pixel V31/DigitalPixelV31-Regular_0.ttf")
 
-        -- Квадрат
+        for Ykey, row in pairs(World) do
+            for Xkey, value in pairs(row) do
+                if tonumber(value) == 0 then love.graphics.setColor(0, 0, 1) end
+                if tonumber(value) == 1 then love.graphics.setColor(0, 1, 0) end
+                if tonumber(value) == 2 then  love.graphics.setColor(0, 1, 0) end
+                love.graphics.rectangle("fill", fuction.ind(Xkey, 2, #Xkey) * 32, fuction.ind(Ykey, 2, #Ykey) * 32, 32, 32)
+                love.graphics.setColor(1, 1, 1)
+            end
+        end
+
+        for i = 1, 6 do
+            love.graphics.rectangle("fill", i * 32, 96, 32, 32)
+        end
+
+
         love.graphics.setColor(1, 1, 1)
         love.graphics.draw(robotSprite, Cube.x, Cube.y)
-
-            -- Земля 
-        love.graphics.setColor(0, 0.7, 0)
-        love.graphics.rectangle("fill", Ground.x, Ground.y, Ground.w, Ground.h)
 
         local windowWidth = love.graphics.getWidth()
         local windowHeight = love.graphics.getHeight()
@@ -150,7 +171,6 @@ function love.draw()
         Ground.y = h - 64
         Ground.w = w
 
-            -- Debug информация
         if debug.enabled then
 
             love.graphics.setColor(1, 1, 1)
@@ -165,7 +185,8 @@ function love.draw()
                 "XY cursor: " .. love.mouse.getX() .. " " .. love.mouse.getY(),
                 "Size Monitor: " .. screenWidth .. "*" .. screenHeight,
                 "Size Window: " .. w .. "*" .. h,
-                "Ground: X" .. Ground.y .. ' Y' .. Ground.x .. " W" .. Ground.w .. " H" .. Ground.h
+                "Ground: X" .. Ground.y .. ' Y' .. Ground.x .. " W" .. Ground.w .. " H" .. Ground.h,
+                "Data World: " .. World.y20.x0
             }
 
             local y = 10

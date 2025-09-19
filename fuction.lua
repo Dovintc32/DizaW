@@ -1,7 +1,7 @@
 local M = {}
 
-function M.drawMenu()
-    love.graphics.print("", 10, 100)
+function M.ind(text, i, j) 
+    return string.sub(text, i, j)
 end
 
 function M.ChangeFont(Size, Font)
@@ -16,4 +16,9 @@ function M.FindCenter(text, y)
     local x = love.graphics.getWidth() / 2 - textWidth / 2  
     return text, x, y
 end
+
+function M.ind(text, i, j) 
+    return string.sub(text, i, j)
+end
+
 return M
