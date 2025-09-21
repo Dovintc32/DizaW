@@ -8,6 +8,7 @@ local Cube = {
 }   
 
 local screenWidth, screenHeight = love.window.getDesktopDimensions()
+local UpdateW = 0
 
 local Buttons = {
     Start = {
@@ -41,6 +42,7 @@ function love.load()
     robotSpriteUp = love.graphics.newImage("Image/Robot/RobotL1_Up.png")
     robotSpriteLeft = love.graphics.newImage("Image/Robot/RobotL1_Left.png")
     robotSpriteRight = love.graphics.newImage("Image/Robot/RobotL1_Right.png")
+    StartW = love.graphics.getWidth()
     robotSprite = robotSpriteUp
     fuction.ChangeFont(10)
 
@@ -80,32 +82,26 @@ function love.update(dt)
 
         Cube.vy = Cube.vy + 800 * dt
         Cube.y = Cube.y + Cube.vy * dt
-
-        if Cube.y + Cube.width > Ground.y then
-            Cube.y = Ground.y - Cube.width
-            Cube.vy = 0
-            Cube.On_ground = true
-        end
-        if Cube.y + Cube.width < Ground.y then
-            Cube.On_ground = false
-        end
     end
 end
 
 function love.keypressed(key)
     if key == "f11" then
+        
         if love.window.getFullscreen() then
             love.window.setMode(800, 600, {
                 fullscreen = false,
                 resizable = true,
                 vsync = true
             })
+            UpdateW = screenWidth / StartW
         else
             local dw, dh = love.window.getDesktopDimensions()
             love.window.setMode(dw, dh, {
                 fullscreen = true,
                 vsync = true
             })
+            UpdateW = screenWidth - StartW
         end
     end
 
@@ -151,18 +147,15 @@ function love.draw()
                 if tonumber(value) == 0 then love.graphics.setColor(0, 0, 1) end
                 if tonumber(value) == 1 then love.graphics.setColor(0, 1, 0) end
                 if tonumber(value) == 2 then  love.graphics.setColor(0, 1, 0) end
-                love.graphics.rectangle("fill", fuction.ind(Xkey, 2, #Xkey) * 32, fuction.ind(Ykey, 2, #Ykey) * 32, 32, 32)
+                love.graphics.rectangle("fill", (fuction.ind(Xkey, 2, #Xkey) * 32), (fuction.ind(Ykey, 2, #Ykey) * 32) * UpdateW, 32, 32)
                 love.graphics.setColor(1, 1, 1)
             end
         end
-
-        for i = 1, 6 do
-            love.graphics.rectangle("fill", i * 32, 96, 32, 32)
-        end
-
+        
+        love.graphics.rectangle("fill", 10 * 32, 20 * 32, 32, 32)
 
         love.graphics.setColor(1, 1, 1)
-        love.graphics.draw(robotSprite, Cube.x, Cube.y)
+        love.graphics.draw(robotSprite, Cube.x, Cube.y, 2, 2)
 
         local windowWidth = love.graphics.getWidth()
         local windowHeight = love.graphics.getHeight()
@@ -186,7 +179,8 @@ function love.draw()
                 "Size Monitor: " .. screenWidth .. "*" .. screenHeight,
                 "Size Window: " .. w .. "*" .. h,
                 "Ground: X" .. Ground.y .. ' Y' .. Ground.x .. " W" .. Ground.w .. " H" .. Ground.h,
-                "Data World: " .. World.y20.x0
+                "Data World: " .. World.y20.x0,
+                "" .. tostring(UpdateW) .. " " .. tostring(StartW)
             }
 
             local y = 10
